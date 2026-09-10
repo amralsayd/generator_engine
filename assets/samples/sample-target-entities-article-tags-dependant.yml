@@ -1,0 +1,44 @@
+references:
+  tags_info:
+    - name: Technology and Innovation
+    - name: Science and Technology
+    - name: Education and Technology
+    - name: Innovation and Technology
+  articles_info:
+    - title_en: 'The Future of Learning and Technology'
+      body_en: 'The future of learning is the future of the future'
+    - title_en: 'Digital Transformation and Technology'
+      body_en: 'The future of learning is the future of the future'
+    - title_en: 'Artificial Intelligence and Technology'
+      body_en: 'The future of learning is the future of the future'
+    - title_en: 'Skills for Tomorrow and Technology'
+      body_en: 'The future of learning is the future of the future'
+
+# Numeric keys ("0", "1", ...) tell the generator to run these entries
+# through generateEngineDependant(), in order, instead of generateEngine().
+'0':
+  taxonomy_vocabulary:
+    tags:
+      check: 1
+      count: 1
+      references:
+        count: 4
+        result_index: tags
+      fields:
+        name: tags_info|name
+      properties: []
+'1':
+  node_type:
+    article:
+      check: 1
+      count: 1
+      references:
+        count: 4
+        result_index: articles
+      fields:
+        title: articles_info|title_en
+        body: articles_info|body_en ## for drupal 11 change this to "field_body"
+        field_image: '$image' # for drupal 11 change this to "field_media_image"
+        field_tags: tags|tags
+      properties:
+        uid: null

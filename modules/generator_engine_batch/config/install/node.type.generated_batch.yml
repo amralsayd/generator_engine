@@ -1,0 +1,16 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - generator_engine_batch
+  enforced:
+    module:
+      - generator_engine_batch
+third_party_settings: {  }
+name: generated-batch
+type: generated_batch
+description: ''
+help: ''
+new_revision: true
+preview_mode: 0
+display_submitted: true

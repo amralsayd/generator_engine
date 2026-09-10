@@ -1,0 +1,40 @@
+generator_engine.config_form_link:
+  title: 'Settings'
+  route_name: generator_engine.config_form
+  base_route: generator_engine.config_form
+  weight: 99
+
+
+generator_engine.config_form_contents_tab:
+  title: 'Contents'
+  route_name: generator_engine.config_form
+  parent_id: generator_engine.config_form_link
+  weight: 0
+
+
+generator_engine.config_content_form_link:
+  title: 'Forms'
+  route_name: generator_engine.config_content_form
+  parent_id: generator_engine.config_form_link
+  weight: 1
+
+
+generator_engine.json_highlighter_form_link:
+  title: 'Using JSON'
+  route_name: generator_engine.json_highlighter_form
+  base_route: generator_engine.config_form
+  weight: 101
+
+
+generator_engine.entities_link:
+  title: 'Entities Forms'
+  route_name: generator_engine.entities
+  base_route: generator_engine.config_form
+  weight: 102
+
+
+generator_engine.yaml_highlighter_form_link:
+  title: 'Using YAML'
+  route_name: generator_engine.yaml_highlighter_form
+  base_route: generator_engine.config_form
+  weight: 103

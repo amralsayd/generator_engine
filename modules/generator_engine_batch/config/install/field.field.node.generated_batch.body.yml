@@ -1,0 +1,26 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.body
+    - node.type.generated_batch
+  module:
+    - text
+    - generator_engine_batch
+  enforced:
+    module:
+      - generator_engine_batch
+id: node.generated_batch.body
+field_name: body
+entity_type: node
+bundle: generated_batch
+label: Body
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  display_summary: true
+  required_summary: false
+field_type: text_with_summary

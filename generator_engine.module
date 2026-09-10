@@ -1,0 +1,288 @@
+<?php
+
+/**
+ * @file
+ * Hook implementations and shared helpers for the Generator Engine module.
+ */
+
+use Drupal\Component\Utility\Html;
+use Drupal\Core\File\FileSystemInterface;
+use Drupal\Core\Render\Markup;
+use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\Url;
+use Drupal\file\Entity\File;
+use Drupal\image\Plugin\Field\FieldType\ImageItem;
+use Drupal\media\Entity\Media;
+use Drupal\user\Entity\User;
+
+/**
+ * Implements hook_help().
+ */
+function generator_engine_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    case 'help.page.generator_engine':
+      $output = '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('Generator Engine creates dummy content entities - nodes, users and taxonomy terms - so developers and QA can populate a site quickly. Entities can be generated from an admin form, from a JSON or YAML document, from Drush, or over HTTP.') . '</p>';
+      $output .= '<h3>' . t('Uses') . '</h3>';
+      $output .= '<dl>';
+      $output .= '<dt>' . t('Choosing what can be generated') . '</dt>';
+      $output .= '<dd>' . t('Select the entity types and bundles available to the generation forms on the <a href=":config">Generator Engine configuration page</a>.', [':config' => Url::fromRoute('generator_engine.config_form')->toString()]) . '</dd>';
+      $output .= '<dt>' . t('Generating entities') . '</dt>';
+      $output .= '<dd>' . t('Use the Entities form for a guided per-bundle form, or the JSON and YAML forms to submit a generation document directly.') . '</dd>';
+      $output .= '</dl>';
+      $output .= '<h3>' . t('Important') . '</h3>';
+      $output .= '<p>' . t('This module creates arbitrary content and user accounts, and writes uploaded files. Grant the "Administer Generator Engine" permission only on development sites, and uninstall the module before going to production.') . '</p>';
+      return $output;
+  }
+}
+
+/**
+ * Builds the message shown after a generation run finishes.
+ *
+ * @param mixed $batch_id
+ *   Node ID of the "generated_batch" node collecting the run, when the
+ *   generator_engine_batch module is enabled.
+ * @param mixed $total_result_count
+ *   Number of generated items, or a countable holding them.
+ *
+ * @return \Drupal\Core\StringTranslation\TranslatableMarkup
+ *   The message, linking to the batch result view when one is available.
+ */
+function generator_engine_handle_generate_result_batch($batch_id, $total_result_count) {
+  $count = is_countable($total_result_count) ? count($total_result_count) : $total_result_count;
+  $module_handler = \Drupal::service('module_handler');
+
+  if ($module_handler->moduleExists('generator_engine_batch') && !empty($batch_id)) {
+    $url = Url::fromRoute('view.admin_generated_batch_content_result.page_1', ['node' => $batch_id])->toString();
+    return t('Generated @items_count item(s). <a href=":result_view_url">View the result</a>.', [
+      '@items_count' => $count,
+      ':result_view_url' => $url,
+    ]);
+  }
+
+  return t('Generated @items_count item(s).', ['@items_count' => $count]);
+}
+
+/**
+ * Builds a human readable HTML summary of an engine generation result.
+ *
+ * The engine returns ['batch_id' => ..., 'items' => [...]], where each item is
+ * [entity_type => [bundle => entity_id]]. This renders only the total counts
+ * per entity type / bundle, not the individual ids.
+ *
+ * @param mixed $generate_result
+ *   The result returned by HelpersService::generateFromArray().
+ * @param string|null $finished_message
+ *   Optional prefix message (e.g. "JSON generation finished.").
+ *
+ * @return \Drupal\Component\Render\MarkupInterface|\Drupal\Core\StringTranslation\TranslatableMarkup
+ *   Renderable markup safe to pass to the messenger.
+ *
+ * @see \Drupal\generator_engine\Classes\SingleNodeGenerator::generateSingleNode()
+ */
+function generator_engine_build_result_markup($generate_result, $finished_message = NULL) {
+  $finished_message = $finished_message ?: t('Generation finished.');
+
+  $items = is_array($generate_result) && !empty($generate_result['items'])
+        ? $generate_result['items']
+        : [];
+
+  if (empty($items)) {
+    return t('@message No entities were generated. Please check your input and the target entities configuration.', [
+      '@message' => $finished_message,
+    ]);
+  }
+
+  // Group generated ids by entity type and bundle to count them.
+  $grouped = generator_engine_group_result_items($generate_result)['items_by_type'];
+
+  $output = '<div class="generator-engine-result">';
+  $output .= '<p><strong>' . Html::escape($finished_message) . '</strong> ';
+  $output .= Html::escape(t('@count item(s) generated.', ['@count' => count($items)])) . '</p>';
+  $output .= '<ul>';
+
+  foreach ($grouped as $entity_type => $bundles) {
+    foreach ($bundles as $bundle => $count) {
+      $output .= '<li>';
+      $output .= '<strong>' . Html::escape($entity_type) . '</strong> &raquo; ';
+      $output .= Html::escape($bundle) . ': ';
+      $output .= '<em>' . $count . '</em>';
+      $output .= '</li>';
+    }
+  }
+
+  $output .= '</ul></div>';
+
+  return Markup::create($output);
+}
+
+/**
+ * Groups an engine generation result into per-type / per-bundle counts.
+ *
+ * The engine returns ['batch_id' => ..., 'items' => [...]], where each item is
+ * [entity_type => [bundle => entity_id]]. This condenses that to plain counts,
+ * shared by generator_engine_build_result_markup() (admin messenger output) and
+ * \Drupal\generator_engine\GenerateApiService (HTTP API "generated" payload).
+ *
+ * @param mixed $generate_result
+ *   The result returned by HelpersService::generateFromArray().
+ *
+ * @return array
+ *   [
+ *     'count' => int,               // total generated items
+ *     'batch_id' => mixed|null,     // engine batch id, when present
+ *     'items_by_type' => [          // entity_type => [bundle => count]
+ *       'node_type' => ['article' => 3],
+ *     ],
+ *   ]
+ */
+function generator_engine_group_result_items($generate_result) {
+  $items = is_array($generate_result) && !empty($generate_result['items'])
+        ? $generate_result['items']
+        : [];
+
+  $grouped = [];
+  foreach ($items as $item) {
+    if (!is_array($item) || empty($item)) {
+      continue;
+    }
+    $entity_type = (string) key($item);
+    $bundle_data = current($item);
+    if (!is_array($bundle_data) || empty($bundle_data)) {
+      continue;
+    }
+    $bundle = (string) key($bundle_data);
+    if (!isset($grouped[$entity_type][$bundle])) {
+      $grouped[$entity_type][$bundle] = 0;
+    }
+    $grouped[$entity_type][$bundle]++;
+  }
+
+  return [
+    'count' => count($items),
+    'batch_id' => is_array($generate_result) && isset($generate_result['batch_id'])
+      ? $generate_result['batch_id']
+      : NULL,
+    'items_by_type' => $grouped,
+  ];
+}
+
+/**
+ * Creates a managed file to populate a generated file or image field.
+ *
+ * @param string $file_ext
+ *   Extension of the sample file to copy, or "image" to generate one.
+ *
+ * @return \Drupal\file\Entity\File|null
+ *   The saved file, or NULL when the sample could not be copied.
+ */
+function generator_engine_generate_custom_file($file_ext) {
+  $file_ext = str_replace('$', '', $file_ext);
+
+  // Image fields get a generated sample rather than a copied asset.
+  if ($file_ext == 'image') {
+    $image_node = User::create();
+    $field_definition = $image_node->user_picture->getFieldDefinition();
+    $field_definition->setSetting('extensions', 'jpg jpeg png');
+    $image = ImageItem::generateSampleValue($field_definition);
+    return File::load($image['target_id']);
+  }
+
+  $random_name = 'sample-file-' . time() . rand(1000, 9999);
+
+  $extension_list = \Drupal::service('extension.list.module');
+  $module_path = $extension_list->getPath('generator_engine');
+  $filepath = $module_path . '/assets/files/sample-file.' . $file_ext;
+  $filename = $random_name . '.' . $file_ext;
+
+  $directory = 'public://generated-files/' . date('Y-m-d');
+  /** @var \Drupal\Core\File\FileSystemInterface $file_system */
+  $file_system = \Drupal::service('file_system');
+  $file_system->prepareDirectory($directory, FileSystemInterface::CREATE_DIRECTORY | FileSystemInterface::MODIFY_PERMISSIONS);
+  // @todo Replace with \Drupal\Core\File\FileExists::Replace once the module
+  // requires Drupal 10.3 or newer. The constant is deprecated in 10.3 but is
+  // the only form available on the supported 9.4-10.2 range.
+  $file_system->copy($filepath, $directory . '/' . $filename, FileSystemInterface::EXISTS_REPLACE);
+
+  $file = File::create([
+    'filename' => $filename,
+    'uri' => $directory . '/' . $filename,
+    'status' => 1,
+    'uid' => \Drupal::currentUser()->id(),
+  ]);
+  $file->save();
+
+  return $file;
+}
+
+/**
+ * Creates a media entity wrapping a generated file.
+ *
+ * @param string $file_ext
+ *   Extension of the sample file to use, or "image" to generate one.
+ * @param array|null $media_types
+ *   Media bundles the target field accepts, used when the extension does not
+ *   map to a bundle on its own.
+ *
+ * @return \Drupal\media\Entity\Media
+ *   The saved media entity.
+ */
+function generator_engine_generate_custom_media_file($file_ext, $media_types) {
+  $file_types = [
+    'pdf' => 'document',
+    'docx' => 'document',
+    'xlsx' => 'document',
+    'pptx' => 'document',
+    'odt' => 'document',
+    'ods' => 'document',
+    'odp' => 'document',
+    'csv' => 'document',
+
+    'image' => 'image',
+    'jpg' => 'image',
+    'jpeg' => 'image',
+    'png' => 'image',
+    'gif' => 'image',
+    'webp' => 'image',
+
+    'mp4' => 'video',
+
+    'mp3' => 'audio',
+  ];
+  // @todo Add support for the remote_video media source.
+  if (isset($file_types[$file_ext])) {
+    $bundle = $file_types[$file_ext];
+  }
+  elseif (is_array($media_types) && count($media_types) > 0) {
+    $bundle = $media_types[array_rand($media_types)];
+
+    if ($bundle == 'image') {
+      $file_ext = 'image';
+    }
+    else {
+      $available_exts = array_keys($file_types, $bundle);
+      $file_ext = $available_exts[array_rand($available_exts)];
+    }
+  }
+  else {
+    $bundle = $file_ext = 'image';
+  }
+
+  $file = generator_engine_generate_custom_file($file_ext);
+
+  $media = Media::create([
+    'bundle' => $bundle,
+    'uid' => \Drupal::currentUser()->id(),
+    'status' => 1,
+    'name' => $file->label(),
+    // Default field name for the image media type; adjust if customised.
+    'field_media_image' => [
+      'target_id' => $file->id(),
+      'alt' => t('Generated image alt text'),
+      'title' => t('Generated image title'),
+    ],
+  ]);
+  $media->save();
+
+  return $media;
+}

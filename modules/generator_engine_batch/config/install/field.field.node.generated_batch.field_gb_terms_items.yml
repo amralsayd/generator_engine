@@ -1,0 +1,34 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_gb_terms_items
+    - node.type.generated_batch
+    - taxonomy.vocabulary.tags
+  module:
+    - generator_engine_batch
+  enforced:
+    module:
+      - generator_engine_batch
+third_party_settings: {  }
+id: node.generated_batch.field_gb_terms_items
+field_name: field_gb_terms_items
+entity_type: node
+bundle: generated_batch
+label: gb_terms_items
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      tags: tags
+    sort:
+      field: name
+      direction: asc
+    auto_create: false
+    auto_create_bundle: tags
+field_type: entity_reference

@@ -1,0 +1,36 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_gb_nodes_items
+    - node.type.article
+    - node.type.generated_batch
+    - node.type.page
+  module:
+    - generator_engine_batch
+  enforced:
+    module:
+      - generator_engine_batch
+third_party_settings: {  }
+id: node.generated_batch.field_gb_nodes_items
+field_name: field_gb_nodes_items
+entity_type: node
+bundle: generated_batch
+label: gb-nodes-items
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:node'
+  handler_settings:
+    target_bundles:
+      article: article
+      page: page
+    sort:
+      field: _none
+      direction: ASC
+    auto_create: false
+    auto_create_bundle: article
+field_type: entity_reference

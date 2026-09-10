@@ -1,0 +1,49 @@
+generator_engine.entities:
+  path: '/admin/generate/entities'
+  defaults:
+    _title: 'Generator Engine Entities'
+    _form: 'Drupal\generator_engine\Form\GeneratorEngineEntitiesForm'
+  requirements:
+    _permission: 'administer generator engine'
+  options:
+    _admin_route: TRUE
+
+generator_engine.config_form:
+  path: '/admin/generate/config'
+  defaults:
+    _title: 'Generator Engine Configurations'
+    _form: 'Drupal\generator_engine\Form\GeneratorEngineConfigForm'
+  requirements:
+    _permission: 'administer generator engine'
+  options:
+    _admin_route: TRUE
+
+generator_engine.config_content_form:
+  path: '/admin/generate/config/forms'
+  defaults:
+    _title: 'Form Entities'
+    _form: 'Drupal\generator_engine\Form\GeneratorEngineConfigContentForm'
+  requirements:
+    _permission: 'administer generator engine'
+  options:
+    _admin_route: TRUE
+
+generator_engine.json_highlighter_form:
+  path: '/admin/generate/json/highlighter'
+  defaults:
+    _title: 'Generate Using JSON'
+    _form: 'Drupal\generator_engine\Form\GenerateJsonHighlighterForm'
+  requirements:
+    _permission: 'administer generator engine'
+  options:
+    _admin_route: TRUE
+
+generator_engine.yaml_highlighter_form:
+  path: '/admin/generate/yaml/highlighter'
+  defaults:
+    _title: 'Generate Using YAML'
+    _form: 'Drupal\generator_engine\Form\GenerateYamlHighlighterForm'
+  requirements:
+    _permission: 'administer generator engine'
+  options:
+    _admin_route: TRUE

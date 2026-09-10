@@ -1,0 +1,9 @@
+name: 'Generator Engine API REST'
+type: module
+description: 'REST resource plugins for the Generator Engine JSON/YAML/file endpoints.'
+package: Development
+core_version_requirement: ^9.4 || ^10 || ^11
+dependencies:
+  - generator_engine:generator_engine_api
+  - drupal:basic_auth
+  - drupal:rest

@@ -1,0 +1,19 @@
+enable_apis: false
+max_generation_count: 500
+content_entities:
+  node_type:
+    check: 1
+    bundles:
+      items:
+        article: article
+        page: page
+  taxonomy_vocabulary:
+    check: 1
+    bundles:
+      items:
+        tags: tags
+  user:
+    check: 1
+    bundles:
+      items:
+        user: user

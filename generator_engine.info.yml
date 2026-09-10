@@ -1,0 +1,6 @@
+name: Generator Engine
+type: module
+description: 'Generate dummy content entities for development and QA.'
+package: Development
+core_version_requirement: ^9.4 || ^10 || ^11
+configure: generator_engine.config_form

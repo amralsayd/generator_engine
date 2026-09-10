@@ -1,0 +1,7 @@
+name: 'Generator Engine Batch'
+type: module
+description: 'Adds a content type that collects the entities produced by each generation run.'
+package: Development
+core_version_requirement: ^9.4 || ^10 || ^11
+dependencies:
+  - generator_engine:generator_engine

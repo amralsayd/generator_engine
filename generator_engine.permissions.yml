@@ -1,0 +1,4 @@
+administer generator engine:
+  title: 'Administer Generator Engine'
+  description: 'Configure and run entity generation. This allows creating arbitrary content, creating user accounts and writing uploaded files, so it should only be granted on development sites.'
+  restrict access: TRUE

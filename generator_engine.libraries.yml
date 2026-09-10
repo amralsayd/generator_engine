@@ -1,0 +1,34 @@
+codemirror:
+  remote: https://codemirror.net/5/
+  version: '5.65.16'
+  license:
+    name: MIT
+    url: https://github.com/codemirror/codemirror5/blob/master/LICENSE
+    gpl-compatible: true
+  js:
+    /libraries/codemirror/lib/codemirror.js: { minified: true }
+  css:
+    theme:
+      /libraries/codemirror/lib/codemirror.css: { minified: true }
+
+json_highlighter:
+  version: VERSION
+  js:
+    /libraries/codemirror/mode/javascript/javascript.js: { minified: true }
+    js/json-editor-init.js: {}
+  dependencies:
+    - core/drupal
+    - core/jquery
+    - core/once
+    - generator_engine/codemirror
+
+yaml_highlighter:
+  version: VERSION
+  js:
+    js/mode/yaml/yaml.js: {}
+    js/yaml-editor-init.js: {}
+  dependencies:
+    - core/drupal
+    - core/jquery
+    - core/once
+    - generator_engine/codemirror

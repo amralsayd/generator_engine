@@ -1,0 +1,30 @@
+generator_engine.settings:
+  type: config_object
+  label: 'Generator Engine settings'
+  mapping:
+    enable_apis:
+      type: boolean
+      label: 'Enable JSON/YAML generation APIs'
+    max_generation_count:
+      type: integer
+      label: 'Maximum entities per generation statement'
+    content_entities:
+      type: sequence
+      label: 'Enabled content entities'
+      sequence:
+        type: mapping
+        label: 'Content entity type'
+        mapping:
+          check:
+            type: integer
+            label: 'Enabled'
+          bundles:
+            type: mapping
+            label: 'Bundles'
+            mapping:
+              items:
+                type: sequence
+                label: 'Enabled bundles'
+                sequence:
+                  type: string
+                  label: 'Bundle'

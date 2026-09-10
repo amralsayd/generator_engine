@@ -1,0 +1,41 @@
+generator_engine_api.generate_json:
+  path: '/api/generator-engine/json'
+  methods: [POST]
+  defaults:
+    _controller: '\Drupal\generator_engine_api\Controller\GenerateApiController::json'
+    _title: 'Generator Engine JSON API'
+  requirements:
+    _permission: 'administer generator engine'
+    # Cookie-authenticated requests must carry an X-CSRF-Token header. Core's
+    # CsrfRequestHeaderAccessCheck only enforces this when the request carries
+    # a session, so basic_auth clients are unaffected.
+    _csrf_request_header_token: 'TRUE'
+  options:
+    _auth: ['basic_auth', 'cookie']
+    no_ui: TRUE
+
+generator_engine_api.generate_yaml:
+  path: '/api/generator-engine/yaml'
+  methods: [POST]
+  defaults:
+    _controller: '\Drupal\generator_engine_api\Controller\GenerateApiController::yaml'
+    _title: 'Generator Engine YAML API'
+  requirements:
+    _permission: 'administer generator engine'
+    _csrf_request_header_token: 'TRUE'
+  options:
+    _auth: ['basic_auth', 'cookie']
+    no_ui: TRUE
+
+generator_engine_api.generate_file:
+  path: '/api/generator-engine/file'
+  methods: [POST]
+  defaults:
+    _controller: '\Drupal\generator_engine_api\Controller\GenerateApiController::file'
+    _title: 'Generator Engine file-upload API'
+  requirements:
+    _permission: 'administer generator engine'
+    _csrf_request_header_token: 'TRUE'
+  options:
+    _auth: ['basic_auth', 'cookie']
+    no_ui: TRUE

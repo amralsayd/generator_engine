@@ -1,0 +1,41 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.teaser
+    - field.field.node.generated_batch.body
+    - field.field.node.generated_batch.field_gb_nodes_items
+    - field.field.node.generated_batch.field_gb_terms_items
+    - field.field.node.generated_batch.field_gb_users_items
+    - node.type.generated_batch
+  module:
+    - text
+    - user
+    - generator_engine_batch
+  enforced:
+    module:
+      - generator_engine_batch
+id: node.generated_batch.teaser
+targetEntityType: node
+bundle: generated_batch
+mode: teaser
+content:
+  body:
+    type: text_summary_or_trimmed
+    label: hidden
+    settings:
+      trim_length: 600
+    third_party_settings: {  }
+    weight: 101
+    region: content
+  links:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 100
+    region: content
+hidden:
+  field_gb_nodes_items: true
+  field_gb_terms_items: true
+  field_gb_users_items: true
+  langcode: true
+  search_api_excerpt: true

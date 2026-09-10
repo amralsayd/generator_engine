@@ -1,0 +1,19 @@
+<?php
+
+/**
+ * @file
+ * Install/uninstall hooks for the Generator Engine API module.
+ */
+
+/**
+ * Implements hook_uninstall().
+ *
+ * The on/off switch for the endpoints lives in the parent module's config
+ * (generator_engine.settings:enable_apis). Flip it back off so a stale
+ * "enabled" value can't linger after this feature is removed.
+ */
+function generator_engine_api_uninstall() {
+  \Drupal::configFactory()->getEditable('generator_engine.settings')
+    ->set('enable_apis', FALSE)
+    ->save();
+}

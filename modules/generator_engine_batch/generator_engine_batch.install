@@ -1,0 +1,26 @@
+<?php
+
+/**
+ * @file
+ * Install and uninstall functions for the Generator Engine Batch module.
+ */
+
+/**
+ * Implements hook_uninstall().
+ *
+ * Deletes all "generated_batch" nodes created by this module.
+ */
+function generator_engine_batch_uninstall() {
+  $storage_handler = \Drupal::entityTypeManager()->getStorage('node');
+
+  $nodes = $storage_handler->getQuery()
+    ->condition('type', 'generated_batch')
+    ->accessCheck(FALSE)
+    ->execute();
+
+  if (!empty($nodes)) {
+    foreach ($storage_handler->loadMultiple($nodes) as $node) {
+      $node->delete();
+    }
+  }
+}

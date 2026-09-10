@@ -1,0 +1,32 @@
+node_type:
+  article:
+    check: 1
+    count: 5
+    fields:
+      title: "%lorem_title"
+      body: "%lorem_paragraph" # for drupal 11 change this to "field_body"
+      field_tags: "!random_single"
+      field_image: "$image" # for drupal 11 change this to "field_media_image"
+    properties:
+      uid: null
+      status: 0
+
+  page:
+    check: 1
+    count: 3
+    fields:
+      title: "%lorem_title"
+      body: "%lorem_paragraph" # for drupal 11 change this to "field_body"
+
+taxonomy_vocabulary:
+  tags:
+    check: 1
+    count: 2
+    fields:
+      name: "%lorem_title"
+    properties: {}
+
+user:
+  user:
+    check: 1
+    count: 5

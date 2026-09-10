@@ -1,0 +1,73 @@
+{
+  "references": {
+      "tags_info": [
+          {
+              "name": "Technology"
+          },
+          {
+              "name": "Science"
+          },
+          {
+              "name": "Education"
+          },
+          {
+              "name": "Innovation"
+          }
+      ],
+      "articles_info": [
+          {
+              "title_en": "The Future of Learning",
+              "body_en": "The future of learning is the future of the future"
+          },
+          {
+              "title_en": "Digital Transformation",
+              "body_en": "The future of learning is the future of the future"
+          },
+          {
+              "title_en": "Artificial Intelligence",
+              "body_en": "The future of learning is the future of the future"
+          },
+          {
+              "title_en": "Skills for Tomorrow",
+              "body_en": "The future of learning is the future of the future"
+          }
+      ]
+  },
+  "0": {
+      "taxonomy_vocabulary": {
+          "tags": {
+              "check": 1,
+              "count": 1,
+              "references": {
+                  "count": 4,
+                  "result_index": "tags"
+              },
+              "fields": {
+                  "name": "tags_info|name"
+              },
+              "properties": []
+          }
+      }
+  },
+  "1": {
+      "node_type": {
+          "article": {
+              "check": 1,
+              "count": 1,
+              "references": {
+                  "count": 4,
+                  "result_index": "articles"
+              },
+              "fields": {
+                  "title": "articles_info|title_en",
+                  "body": "articles_info|body_en",
+                  "field_image": "$image",
+                  "field_tags": "tags|tags"
+              },
+              "properties": {
+                  "uid": null
+              }
+          }
+      }
+  }
+}

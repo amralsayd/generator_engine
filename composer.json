@@ -1,0 +1,18 @@
+{
+    "name": "drupal/generator_engine",
+    "description": "Generate dummy content entities (nodes, users, taxonomy terms) for development and QA, from the UI, Drush or HTTP APIs.",
+    "type": "drupal-module",
+    "license": "GPL-2.0-or-later",
+    "homepage": "https://www.drupal.org/project/generator_engine",
+    "support": {
+        "issues": "https://www.drupal.org/project/issues/generator_engine",
+        "source": "https://git.drupalcode.org/project/generator_engine"
+    },
+    "require": {
+        "drupal/core": "^9.4 || ^10 || ^11"
+    },
+    "suggest": {
+        "drush/drush": "Required by the generator_engine:generate command and the procedure commands.",
+        "npm-asset/codemirror": "Enables syntax highlighting on the JSON and YAML generation forms. Requires asset-packagist and an installer-paths entry mapping it to libraries/codemirror; without it the forms fall back to a plain textarea."
+    }
+}

@@ -1,0 +1,24 @@
+<?php
+
+/**
+ * @file
+ * Install and requirements hooks for the Generator Engine module.
+ */
+
+/**
+ * Implements hook_requirements().
+ */
+function generator_engine_requirements($phase) {
+  $requirements = [];
+
+  if ($phase === 'runtime') {
+    $requirements['generator_engine_development_only'] = [
+      'title' => t('Generator Engine'),
+      'value' => t('Enabled'),
+      'description' => t('Generator Engine creates arbitrary content and user accounts on demand. It is intended for development and QA sites; uninstall it before going to production.'),
+      'severity' => REQUIREMENT_WARNING,
+    ];
+  }
+
+  return $requirements;
+}

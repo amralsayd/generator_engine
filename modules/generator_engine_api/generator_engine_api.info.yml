@@ -1,0 +1,8 @@
+name: 'Generator Engine API'
+type: module
+description: 'JSON/YAML/file HTTP endpoints (Basic Auth) for the Generator Engine pipeline.'
+package: Development
+core_version_requirement: ^9.4 || ^10 || ^11
+dependencies:
+  - generator_engine:generator_engine
+  - drupal:basic_auth

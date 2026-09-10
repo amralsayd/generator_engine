@@ -1,0 +1,26 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - node.type.generated_batch
+  module:
+    - generator_engine_batch
+  enforced:
+    module:
+      - generator_engine_batch
+id: node.generated_batch.promote
+field_name: promote
+entity_type: node
+bundle: generated_batch
+label: 'Promoted to front page'
+description: ''
+required: false
+translatable: true
+default_value:
+  -
+    value: 0
+default_value_callback: ''
+settings:
+  on_label: 'On'
+  off_label: 'Off'
+field_type: boolean

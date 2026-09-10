@@ -1,0 +1,4 @@
+services:
+  generator_engine_api.processor:
+    class: Drupal\generator_engine_api\GenerateApiService
+    arguments: ['@config.factory', '@generator_engine.helpers']

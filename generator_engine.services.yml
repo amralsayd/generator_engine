@@ -1,0 +1,15 @@
+services:
+  generator_engine.helpers:
+    class: Drupal\generator_engine\HelpersService
+    arguments:
+      - '@entity_type.manager'
+      - '@entity_field.manager'
+      - '@config.factory'
+      - '@module_handler'
+
+  generator_engine.commands:
+    class: Drupal\generator_engine\Commands\GenerationCommands
+    arguments:
+      - '@generator_engine.helpers'
+    tags:
+      - { name: drush.command }
